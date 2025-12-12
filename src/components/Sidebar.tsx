@@ -1,13 +1,13 @@
 import { 
   Home, 
-  BookOpen, 
+  FolderKanban, 
   Trophy, 
   Settings, 
   HelpCircle,
-  GraduationCap,
   BarChart3,
   Users,
-  X
+  X,
+  Sparkles
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -19,8 +19,8 @@ interface SidebarProps {
 
 const menuItems = [
   { icon: Home, label: "Dashboard", active: true },
-  { icon: BookOpen, label: "My Modules", active: false },
-  { icon: GraduationCap, label: "Learning Paths", active: false },
+  { icon: FolderKanban, label: "My Projects", active: false },
+  { icon: Sparkles, label: "AI Tools", active: false },
   { icon: BarChart3, label: "Progress", active: false },
   { icon: Trophy, label: "Achievements", active: false },
   { icon: Users, label: "Community", active: false },

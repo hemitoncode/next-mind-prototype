@@ -1,0 +1,344 @@
+{
+  "projects": [
+    {
+      "id": "youth-advocacy-campaign",
+      "title": "Launch a Youth Advocacy Campaign",
+      "description": "Design and execute a social media campaign that mobilizes young voters around a local political issue using ethical AI tools.",
+      "category": "Social Media & Advocacy",
+      "duration": "2-3 weeks",
+      "participants": 1847,
+      "difficulty": "Intermediate",
+      "colorAccent": "hsl(0, 72%, 51%)",
+      "status": "in-progress",
+      "progress": 65,
+      "tags": ["Advocacy", "Social Media", "Youth Engagement"],
+      "lessons": [
+        {
+          "id": "lesson-1",
+          "title": "Identifying Your Cause",
+          "description": "Learn how to research and select a meaningful political issue that resonates with your community.",
+          "duration": "45 min",
+          "type": "interactive"
+        },
+        {
+          "id": "lesson-2", 
+          "title": "Crafting Your Message with AI",
+          "description": "Use AI tools ethically to refine your campaign messaging while maintaining authenticity.",
+          "duration": "1 hour",
+          "type": "ai-assisted"
+        },
+        {
+          "id": "lesson-3",
+          "title": "Building Your Digital Strategy",
+          "description": "Create a comprehensive social media plan targeting youth audiences.",
+          "duration": "1.5 hours",
+          "type": "practical"
+        },
+        {
+          "id": "lesson-4",
+          "title": "Measuring Impact & Engagement",
+          "description": "Track your campaign's reach and learn to interpret analytics responsibly.",
+          "duration": "30 min",
+          "type": "analysis"
+        }
+      ],
+      "aiFeatures": [
+        "AI-powered message refinement",
+        "Sentiment analysis on your content",
+        "Hashtag and trend suggestions"
+      ],
+      "outcomes": [
+        "Create a complete campaign strategy document",
+        "Launch at least 5 posts across platforms",
+        "Engage 100+ community members"
+      ]
+    },
+    {
+      "id": "deepfake-detection-workshop",
+      "title": "Deepfake Detection Workshop",
+      "description": "Master the skills to identify AI-generated political content and become a trusted source of information in your community.",
+      "category": "Media Literacy",
+      "duration": "1-2 weeks",
+      "participants": 3124,
+      "difficulty": "Beginner",
+      "colorAccent": "hsl(350, 80%, 45%)",
+      "status": "available",
+      "progress": 0,
+      "tags": ["Deepfakes", "Critical Thinking", "Misinformation"],
+      "lessons": [
+        {
+          "id": "lesson-1",
+          "title": "What Are Deepfakes?",
+          "description": "Understand the technology behind AI-generated media and its political implications.",
+          "duration": "30 min",
+          "type": "interactive"
+        },
+        {
+          "id": "lesson-2",
+          "title": "Spotting the Signs",
+          "description": "Learn visual and audio cues that reveal manipulated content.",
+          "duration": "1 hour",
+          "type": "practical"
+        },
+        {
+          "id": "lesson-3",
+          "title": "Verification Tools & Techniques",
+          "description": "Use professional fact-checking methods and AI detection tools.",
+          "duration": "1 hour",
+          "type": "ai-assisted"
+        },
+        {
+          "id": "lesson-4",
+          "title": "Teaching Others",
+          "description": "Create educational materials to help your peers identify misinformation.",
+          "duration": "45 min",
+          "type": "practical"
+        }
+      ],
+      "aiFeatures": [
+        "Practice with AI-generated examples",
+        "Real-time authenticity scoring",
+        "Compare original vs manipulated content"
+      ],
+      "outcomes": [
+        "Identify deepfakes with 90%+ accuracy",
+        "Create a guide for your school/community",
+        "Train at least 10 peers"
+      ]
+    },
+    {
+      "id": "civic-chatbot-builder",
+      "title": "Build a Civic Engagement Chatbot",
+      "description": "Design and deploy an AI chatbot that helps young people understand local elections, voting rights, and civic participation.",
+      "category": "Tech & Democracy",
+      "duration": "3-4 weeks",
+      "participants": 892,
+      "difficulty": "Advanced",
+      "colorAccent": "hsl(10, 75%, 50%)",
+      "status": "available",
+      "progress": 0,
+      "tags": ["AI Development", "Civic Tech", "Voting"],
+      "lessons": [
+        {
+          "id": "lesson-1",
+          "title": "Civic Information Research",
+          "description": "Gather accurate, non-partisan information about local governance and elections.",
+          "duration": "1 hour",
+          "type": "research"
+        },
+        {
+          "id": "lesson-2",
+          "title": "Conversational Design Basics",
+          "description": "Learn how to structure chatbot conversations that are helpful and unbiased.",
+          "duration": "1.5 hours",
+          "type": "interactive"
+        },
+        {
+          "id": "lesson-3",
+          "title": "Building Your Bot",
+          "description": "Use no-code AI tools to create your civic engagement chatbot.",
+          "duration": "2 hours",
+          "type": "ai-assisted"
+        },
+        {
+          "id": "lesson-4",
+          "title": "Testing for Bias",
+          "description": "Evaluate your chatbot for political bias and accuracy.",
+          "duration": "1 hour",
+          "type": "analysis"
+        },
+        {
+          "id": "lesson-5",
+          "title": "Launch & Gather Feedback",
+          "description": "Deploy your chatbot and iterate based on user responses.",
+          "duration": "1 hour",
+          "type": "practical"
+        }
+      ],
+      "aiFeatures": [
+        "No-code AI chatbot builder",
+        "Bias detection analysis",
+        "Response quality scoring"
+      ],
+      "outcomes": [
+        "Deploy a working civic chatbot",
+        "Help 50+ users learn about voting",
+        "Document your development process"
+      ]
+    },
+    {
+      "id": "political-ad-analyzer",
+      "title": "Political Ad Analysis Project",
+      "description": "Investigate how AI is used in political advertising and create transparency reports for your community.",
+      "category": "Investigative Journalism",
+      "duration": "2 weeks",
+      "participants": 2156,
+      "difficulty": "Intermediate",
+      "colorAccent": "hsl(0, 60%, 55%)",
+      "status": "completed",
+      "progress": 100,
+      "tags": ["Advertising", "Transparency", "Research"],
+      "lessons": [
+        {
+          "id": "lesson-1",
+          "title": "The Political Ad Landscape",
+          "description": "Understand how political ads are targeted, funded, and distributed.",
+          "duration": "45 min",
+          "type": "interactive"
+        },
+        {
+          "id": "lesson-2",
+          "title": "AI in Political Targeting",
+          "description": "Learn how algorithms decide who sees which political messages.",
+          "duration": "1 hour",
+          "type": "interactive"
+        },
+        {
+          "id": "lesson-3",
+          "title": "Building Your Analysis Framework",
+          "description": "Create a systematic method for evaluating political ads.",
+          "duration": "1 hour",
+          "type": "practical"
+        },
+        {
+          "id": "lesson-4",
+          "title": "Creating Your Report",
+          "description": "Compile your findings into an accessible transparency report.",
+          "duration": "1.5 hours",
+          "type": "ai-assisted"
+        }
+      ],
+      "aiFeatures": [
+        "AI-powered ad categorization",
+        "Sentiment and emotion analysis",
+        "Report generation assistance"
+      ],
+      "outcomes": [
+        "Analyze 20+ political ads",
+        "Publish a transparency report",
+        "Present findings to peers"
+      ]
+    },
+    {
+      "id": "community-voice-amplifier",
+      "title": "Community Voice Amplifier",
+      "description": "Use AI tools to gather, analyze, and amplify underrepresented voices in your local political conversations.",
+      "category": "Community Organizing",
+      "duration": "4 weeks",
+      "participants": 1567,
+      "difficulty": "Intermediate",
+      "colorAccent": "hsl(355, 70%, 48%)",
+      "status": "in-progress",
+      "progress": 30,
+      "tags": ["Community", "Inclusion", "Storytelling"],
+      "lessons": [
+        {
+          "id": "lesson-1",
+          "title": "Identifying Marginalized Voices",
+          "description": "Research which communities are underrepresented in local politics.",
+          "duration": "1 hour",
+          "type": "research"
+        },
+        {
+          "id": "lesson-2",
+          "title": "Ethical Interview Techniques",
+          "description": "Learn to conduct respectful, meaningful community interviews.",
+          "duration": "1.5 hours",
+          "type": "practical"
+        },
+        {
+          "id": "lesson-3",
+          "title": "AI-Assisted Story Compilation",
+          "description": "Use AI to help organize and present community narratives.",
+          "duration": "1 hour",
+          "type": "ai-assisted"
+        },
+        {
+          "id": "lesson-4",
+          "title": "Platform Strategy",
+          "description": "Choose the right channels to share community stories effectively.",
+          "duration": "45 min",
+          "type": "interactive"
+        },
+        {
+          "id": "lesson-5",
+          "title": "Measuring Community Impact",
+          "description": "Track how your amplification efforts create real change.",
+          "duration": "30 min",
+          "type": "analysis"
+        }
+      ],
+      "aiFeatures": [
+        "Interview transcription & analysis",
+        "Theme identification across stories",
+        "Content optimization suggestions"
+      ],
+      "outcomes": [
+        "Document 10+ community stories",
+        "Create a multimedia presentation",
+        "Connect stories to policy opportunities"
+      ]
+    },
+    {
+      "id": "ai-policy-proposal",
+      "title": "Draft an AI Policy Proposal",
+      "description": "Research, write, and present a proposal for ethical AI use in government to your local representatives.",
+      "category": "Policy & Governance",
+      "duration": "3 weeks",
+      "participants": 743,
+      "difficulty": "Advanced",
+      "colorAccent": "hsl(5, 65%, 52%)",
+      "status": "locked",
+      "progress": 0,
+      "prerequisite": "Complete 2 other projects first",
+      "tags": ["Policy", "Government", "Leadership"],
+      "lessons": [
+        {
+          "id": "lesson-1",
+          "title": "AI Policy Landscape",
+          "description": "Survey existing AI policies at local, state, and federal levels.",
+          "duration": "1.5 hours",
+          "type": "research"
+        },
+        {
+          "id": "lesson-2",
+          "title": "Stakeholder Mapping",
+          "description": "Identify who is affected by AI policy decisions.",
+          "duration": "1 hour",
+          "type": "interactive"
+        },
+        {
+          "id": "lesson-3",
+          "title": "Writing Your Proposal",
+          "description": "Structure a compelling, evidence-based policy recommendation.",
+          "duration": "2 hours",
+          "type": "ai-assisted"
+        },
+        {
+          "id": "lesson-4",
+          "title": "Building Coalition Support",
+          "description": "Gather endorsements and feedback from community leaders.",
+          "duration": "1 hour",
+          "type": "practical"
+        },
+        {
+          "id": "lesson-5",
+          "title": "Presentation Skills",
+          "description": "Prepare to present your proposal to officials.",
+          "duration": "45 min",
+          "type": "practical"
+        }
+      ],
+      "aiFeatures": [
+        "Policy research assistant",
+        "Draft review and suggestions",
+        "Presentation coaching"
+      ],
+      "outcomes": [
+        "Complete policy proposal document",
+        "Present to local government",
+        "Publish op-ed or blog post"
+      ]
+    }
+  ]
+}
