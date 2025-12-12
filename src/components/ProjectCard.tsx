@@ -1,7 +1,6 @@
-import { Clock, Users, CheckCircle2, Lock, ArrowRight, Sparkles, ChevronDown } from "lucide-react";
+import { Clock, Users, CheckCircle2, Lock, ArrowRight, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
 
 interface ProjectCardProps {
   id: string;
@@ -35,48 +34,6 @@ const ProjectCard = ({
   const isLocked = status === "locked";
   const isCompleted = status === "completed";
   const isInProgress = status === "in-progress";
-
-  // -------------------------------
-  // CORE JOURNAL SYSTEM (MESSY, INLINE, SPAGHETTI)
-  // -------------------------------
-  const storageKey = `core-journal-${id}`;
-  const [coreOpen, setCoreOpen] = useState(false);
-  const [journal, setJournal] = useState({
-    context: "",
-    objectiveOutput: "",
-    reflection: "",
-    evaluation: "",
-  });
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const saved = localStorage.getItem(storageKey);
-    if (saved) setJournal(JSON.parse(saved));
-  }, [id]);
-
-  const updateJournal = (obj: any) => {
-    const newData = { ...journal, ...obj };
-    setJournal(newData);
-    localStorage.setItem(storageKey, JSON.stringify(newData));
-  };
-
-  const runObjective = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/core-objective", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ context: journal.context }),
-      });
-      const data = await res.json();
-      updateJournal({ objectiveOutput: data.output || "No output from server." });
-    } catch (err) {
-      updateJournal({ objectiveOutput: "Error contacting AI endpoint." });
-    }
-    setLoading(false);
-  };
-
-  // -------------------------------
 
   return (
     <div
@@ -162,8 +119,8 @@ const ProjectCard = ({
         </div>
       )}
 
-      {/* Meta */}
-      <div className="flex items-center justify-between text-xs text-muted-foreground mb-4">
+      {/* Meta info */}
+      <div className="flex items-center justify-between text-xs text-muted-foreground">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-1">
             <Clock className="h-3.5 w-3.5" />
@@ -184,72 +141,6 @@ const ProjectCard = ({
         </span>
       </div>
 
-      {/* CORE PANEL BUTTON */}
-      <button
-        onClick={() => setCoreOpen(!coreOpen)}
-        className="flex items-center gap-2 w-full rounded-md border px-3 py-2 text-sm mb-3"
-      >
-        CORE Framework Tools
-        <ChevronDown className={cn("h-4 w-4 transition-transform", coreOpen && "rotate-180")} />
-      </button>
-
-      {/* CORE PANEL CONTENT */}
-      {coreOpen && (
-        <div className="border rounded-md p-4 space-y-5 bg-background text-sm">
-
-          {/* CONTEXT */}
-          <div>
-            <label className="font-semibold">C — Context</label>
-            <textarea
-              className="w-full mt-1 rounded-md border bg-card p-2"
-              rows={3}
-              value={journal.context}
-              onChange={(e) => updateJournal({ context: e.target.value })}
-            />
-          </div>
-
-          {/* OBJECTIVE */}
-          <div>
-            <button
-              onClick={runObjective}
-              className="rounded-md bg-primary px-4 py-2 text-primary-foreground text-xs"
-            >
-              {loading ? "Thinking..." : "Get Objective Information"}
-            </button>
-
-            {journal.objectiveOutput && (
-              <div className="mt-2 rounded-md bg-muted p-2">
-                <strong>O — Objective Output</strong>
-                <p className="mt-1 whitespace-pre-wrap">{journal.objectiveOutput}</p>
-              </div>
-            )}
-          </div>
-
-          {/* REFLECT */}
-          <div>
-            <label className="font-semibold">R — Reflect</label>
-            <textarea
-              className="w-full mt-1 rounded-md border bg-card p-2"
-              rows={3}
-              value={journal.reflection}
-              onChange={(e) => updateJournal({ reflection: e.target.value })}
-            />
-          </div>
-
-          {/* EVALUATE */}
-          <div>
-            <label className="font-semibold">E — Evaluate</label>
-            <textarea
-              className="w-full mt-1 rounded-md border bg-card p-2"
-              rows={3}
-              value={journal.evaluation}
-              onChange={(e) => updateJournal({ evaluation: e.target.value })}
-            />
-          </div>
-
-        </div>
-      )}
-
       {/* Hover action */}
       {!isLocked && (
         <Link 
@@ -265,7 +156,6 @@ const ProjectCard = ({
           </button>
         </Link>
       )}
-
     </div>
   );
 };
