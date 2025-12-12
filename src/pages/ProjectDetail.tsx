@@ -118,8 +118,6 @@ const ProjectDetail = () => {
         body: JSON.stringify({
           // send context and an instruction to produce OBJECTIVE-ONLY output
           context: coreState.context,
-          instruction:
-            "CORE-O: Provide objective, factual information only. No opinions, no persuasion. Keep it concise and cite any numbered items. If you don't know, say you don't know.",
           meta: {
             projectId: project.id,
             lessonId: currentLesson.id,
