@@ -102,45 +102,67 @@ const ProjectDetail = () => {
 
   // Run Objective: contact your API (backend should enforce "objective only")
   const runObjective = async () => {
-    // If no context, nudge user
     if (!coreState.context.trim()) {
       updateCore({ objective: "Write some context first — what do you want objective info about?" });
       return;
     }
-
+  
     setIsObjectiveLoading(true);
     setObjectiveError(null);
-
+  
     try {
-      const res = await fetch("/api/core-objective", {
+      const response = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`
+        },
         body: JSON.stringify({
-          // send context and an instruction to produce OBJECTIVE-ONLY output
-          context: coreState.context,
-          meta: {
-            projectId: project.id,
-            lessonId: currentLesson.id,
-            source: "nextmind-prototype",
-          },
-        }),
+          model: "gpt-4.1-mini",
+          messages: [
+            {
+              role: "system",
+              content: `You are an AI that produces ONLY objective, non-interpretive, non-personal factual summaries.
+  
+  Rules:
+  - No opinions
+  - No advice
+  - No reflection
+  - No evaluation
+  - No next steps
+  - No embellishment
+  - No emotional tone
+  - Do NOT reference the user
+  - Do NOT speak in first person
+  - Keep it concise, factual, and neutral
+  - Focus *strictly* on the context provided
+  
+  Output must be plain text only.`
+            },
+            {
+              role: "user",
+              content: coreState.context
+            }
+          ],
+          temperature: 0,
+          max_tokens: 400
+        })
       });
-
-      if (!res.ok) throw new Error(`Status ${res.status}`);
-
-      const data = await res.json();
-      // expects { output: string }
-      const output = data?.output || "No objective output returned from API.";
+  
+      if (!response.ok) throw new Error(`OpenAI API error: ${response.status}`);
+  
+      const data = await response.json();
+      const output = data?.choices?.[0]?.message?.content || "No objective output returned from API.";
       updateCore({ objective: output });
     } catch (err) {
-      // fallback: small deterministic objective-generator (toy)
       const fallback = generateFallbackObjective(coreState.context, project, currentLesson);
       updateCore({ objective: fallback });
-      setObjectiveError("Failed to reach AI endpoint — using local fallback.");
+      setObjectiveError("Failed to reach OpenAI API — using local fallback.");
     } finally {
       setIsObjectiveLoading(false);
     }
   };
+
 
   // Small playful fallback generator (keeps things niche & useful)
   const generateFallbackObjective = (context: string, proj: any, lesson: any) => {
