@@ -1,4 +1,4 @@
-import { Play, ArrowRight, Sparkles } from "lucide-react";
+import { Rocket, ArrowRight, Sparkles, Users, FolderKanban, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const HeroSection = () => {
@@ -14,25 +14,25 @@ const HeroSection = () => {
         <div className="max-w-xl">
           <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary-foreground/20 px-3 py-1 text-sm text-primary-foreground">
             <Sparkles className="h-4 w-4" />
-            <span>New module available</span>
+            <span>New project available</span>
           </div>
           
           <h2 className="mb-4 text-3xl font-bold text-primary-foreground lg:text-4xl">
-            Master AI Ethics in Politics
+            Shape the Future of Youth Politics
           </h2>
           
           <p className="mb-6 text-primary-foreground/80 text-lg">
-            Learn to identify, evaluate, and respond to AI-generated political content. 
-            Build critical thinking skills for the digital age.
+            Complete hands-on projects that teach you to use AI ethically for advocacy, 
+            social media campaigns, and political engagement.
           </p>
           
           <div className="flex flex-wrap gap-3">
             <Button variant="hero" size="lg">
-              <Play className="h-5 w-5" />
-              Start Learning
+              <Rocket className="h-5 w-5" />
+              Start a Project
             </Button>
             <Button variant="heroOutline" size="lg">
-              View Curriculum
+              Explore All Projects
               <ArrowRight className="h-5 w-5" />
             </Button>
           </div>
@@ -44,23 +44,29 @@ const HeroSection = () => {
             <div className="relative rounded-xl bg-primary-foreground/20 p-6 backdrop-blur">
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-lg bg-primary-foreground/30" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-foreground/30">
+                    <FolderKanban className="h-5 w-5 text-primary-foreground" />
+                  </div>
                   <div>
-                    <p className="font-semibold text-primary-foreground">12 Modules</p>
-                    <p className="text-sm text-primary-foreground/70">Hands-on learning</p>
+                    <p className="font-semibold text-primary-foreground">6 Projects</p>
+                    <p className="text-sm text-primary-foreground/70">Real-world impact</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-lg bg-primary-foreground/30" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-foreground/30">
+                    <Users className="h-5 w-5 text-primary-foreground" />
+                  </div>
                   <div>
-                    <p className="font-semibold text-primary-foreground">24 Hours</p>
-                    <p className="text-sm text-primary-foreground/70">Total content</p>
+                    <p className="font-semibold text-primary-foreground">10K+ Youth</p>
+                    <p className="text-sm text-primary-foreground/70">Already participating</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-lg bg-primary-foreground/30" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-foreground/30">
+                    <Award className="h-5 w-5 text-primary-foreground" />
+                  </div>
                   <div>
-                    <p className="font-semibold text-primary-foreground">Certificate</p>
+                    <p className="font-semibold text-primary-foreground">Certificates</p>
                     <p className="text-sm text-primary-foreground/70">Upon completion</p>
                   </div>
                 </div>
