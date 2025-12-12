@@ -328,7 +328,7 @@ const ProjectDetail = () => {
                     <textarea
                       className="w-full mt-2 rounded-md border bg-background p-3 text-sm"
                       rows={3}
-                      placeholder="E.g. 'Summarize main ethical tradeoffs of this lesson' or 'Give quick practical steps to try out the method'..."
+                      placeholder=""
                       value={coreState.context}
                       onChange={(e) => updateCore({ context: e.target.value })}
                     />
