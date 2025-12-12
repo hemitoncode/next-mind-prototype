@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import { 
@@ -8,9 +8,6 @@ import {
   CheckCircle2, 
   Play, 
   Sparkles,
-  MessageSquare,
-  Send,
-  Bot,
   Target,
   BookOpen
 } from "lucide-react";
@@ -23,11 +20,16 @@ const ProjectDetail = () => {
   const project = projectsData.projects.find(p => p.id === projectId);
   
   const [activeLesson, setActiveLesson] = useState(0);
-  const [aiInput, setAiInput] = useState("");
-  const [aiMessages, setAiMessages] = useState<{role: string; content: string}[]>([
-    { role: "assistant", content: "Hi! I'm your AI project assistant. I'm here to help you through this project. Ask me anything about the lesson content, get feedback on your ideas, or request suggestions!" }
-  ]);
-  const [isAiLoading, setIsAiLoading] = useState(false);
+  // CORE state is per-lesson and persisted to localStorage
+  const [coreState, setCoreState] = useState({
+    context: "",
+    objective: "",
+    reflection: "",
+    evaluation: "",
+    lastSavedAt: "" as string | Date,
+  });
+  const [isObjectiveLoading, setIsObjectiveLoading] = useState(false);
+  const [objectiveError, setObjectiveError] = useState<string | null>(null);
 
   if (!project) {
     return (
@@ -40,31 +42,133 @@ const ProjectDetail = () => {
     );
   }
 
-  const handleAiSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!aiInput.trim() || isAiLoading) return;
+  const currentLesson = project.lessons[activeLesson];
 
-    const userMessage = aiInput.trim();
-    setAiInput("");
-    setAiMessages(prev => [...prev, { role: "user", content: userMessage }]);
-    setIsAiLoading(true);
+  // Helpers for localStorage keys (per project & per lesson)
+  const storageKey = (projId: string, lessonId: string) => `core:${projId}:${lessonId}`;
 
-    // Simulate AI response (in production, this would call an actual AI API)
-    setTimeout(() => {
-      const responses = [
-        `Great question about "${project.lessons[activeLesson].title}"! Here's what I think: The key to success in this lesson is to focus on practical application. Try breaking down the concept into smaller, actionable steps.`,
-        `That's a thoughtful approach! For this project on ${project.category}, remember that authenticity is crucial. Let me suggest some ways to strengthen your work...`,
-        `Excellent thinking! Here are some additional resources and tips that might help you with this aspect of the project. Consider how your work can create real impact in your community.`,
-        `I love that you're thinking critically about this! In the context of ${project.title}, here are some perspectives to consider that will help you develop a more nuanced understanding.`
-      ];
-      
-      const response = responses[Math.floor(Math.random() * responses.length)];
-      setAiMessages(prev => [...prev, { role: "assistant", content: response }]);
-      setIsAiLoading(false);
-    }, 1500);
+  // Load core state for active lesson
+  useEffect(() => {
+    const key = storageKey(project.id, currentLesson.id);
+    const raw = localStorage.getItem(key);
+    if (raw) {
+      try {
+        const parsed = JSON.parse(raw);
+        setCoreState({ 
+          context: parsed.context || "",
+          objective: parsed.objective || "",
+          reflection: parsed.reflection || "",
+          evaluation: parsed.evaluation || "",
+          lastSavedAt: parsed.lastSavedAt || "",
+        });
+      } catch {
+        setCoreState({
+          context: "",
+          objective: "",
+          reflection: "",
+          evaluation: "",
+          lastSavedAt: "",
+        });
+      }
+    } else {
+      // blank slate for new lesson
+      setCoreState({
+        context: "",
+        objective: "",
+        reflection: "",
+        evaluation: "",
+        lastSavedAt: "",
+      });
+    }
+    // reset objective error when switching lessons
+    setObjectiveError(null);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projectId, activeLesson]);
+
+  // Auto-save whenever coreState changes (simple, immediate)
+  useEffect(() => {
+    const key = storageKey(project.id, currentLesson.id);
+    const payload = { ...coreState, lastSavedAt: new Date().toISOString() };
+    localStorage.setItem(key, JSON.stringify(payload));
+    // update lastSavedAt in state quickly
+    setCoreState(prev => ({ ...prev, lastSavedAt: payload.lastSavedAt }));
+  // we intentionally want to run when coreState changes
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [coreState.context, coreState.objective, coreState.reflection, coreState.evaluation]);
+
+  const updateCore = (patch: Partial<typeof coreState>) => {
+    setCoreState(prev => ({ ...prev, ...patch }));
   };
 
-  const currentLesson = project.lessons[activeLesson];
+  // Run Objective: contact your API (backend should enforce "objective only")
+  const runObjective = async () => {
+    // If no context, nudge user
+    if (!coreState.context.trim()) {
+      updateCore({ objective: "Write some context first — what do you want objective info about?" });
+      return;
+    }
+
+    setIsObjectiveLoading(true);
+    setObjectiveError(null);
+
+    try {
+      const res = await fetch("/api/core-objective", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          // send context and an instruction to produce OBJECTIVE-ONLY output
+          context: coreState.context,
+          instruction:
+            "CORE-O: Provide objective, factual information only. No opinions, no persuasion. Keep it concise and cite any numbered items. If you don't know, say you don't know.",
+          meta: {
+            projectId: project.id,
+            lessonId: currentLesson.id,
+            source: "nextmind-prototype",
+          },
+        }),
+      });
+
+      if (!res.ok) throw new Error(`Status ${res.status}`);
+
+      const data = await res.json();
+      // expects { output: string }
+      const output = data?.output || "No objective output returned from API.";
+      updateCore({ objective: output });
+    } catch (err) {
+      // fallback: small deterministic objective-generator (toy)
+      const fallback = generateFallbackObjective(coreState.context, project, currentLesson);
+      updateCore({ objective: fallback });
+      setObjectiveError("Failed to reach AI endpoint — using local fallback.");
+    } finally {
+      setIsObjectiveLoading(false);
+    }
+  };
+
+  // Small playful fallback generator (keeps things niche & useful)
+  const generateFallbackObjective = (context: string, proj: any, lesson: any) => {
+    // aim for concise, bullet-like objective info
+    const bullets = [
+      `Focus: ${lesson.title} — key practical takeaway: break tasks into small, testable steps.`,
+      `Scope: Apply this within the project's category (${proj.category}).`,
+      `Constraint: Keep interventions ethical, documented, and reversible.`,
+      `Measurement: Use simple metrics (e.g., "time spent", "iterations", "user feedback").`,
+    ];
+    return `Objective notes (local fallback):\n\n${bullets.join("\n")}\n\nContext you provided:\n${context.slice(0, 300)}${context.length > 300 ? "…" : ""}`;
+  };
+
+  // Reset CORE for this lesson
+  const resetCoreForLesson = () => {
+    const key = storageKey(project.id, currentLesson.id);
+    localStorage.removeItem(key);
+    setCoreState({
+      context: "",
+      objective: "",
+      reflection: "",
+      evaluation: "",
+      lastSavedAt: "",
+    });
+    setObjectiveError(null);
+  };
 
   return (
     <>
@@ -182,8 +286,113 @@ const ProjectDetail = () => {
                   </Button>
                 </div>
 
+                {/* CORE Framework — inserted BELOW each lesson */}
+                <div className="mt-6 rounded-xl border border-border bg-card p-4 shadow-inner">
+                  <div className="mb-3 flex items-center gap-3">
+                    <Sparkles className="h-6 w-6 text-primary" />
+                    <h3 className="font-semibold text-foreground">CORE — Reflective Lab</h3>
+                    <span className="ml-auto text-xs text-muted-foreground">Prototype • autosaves locally</span>
+                  </div>
+
+                  {/* Mini intro */}
+                  <p className="text-xs text-muted-foreground mb-4">
+                    Use the CORE loop to interrogate what you learned: <strong>C</strong>ontext → <strong>O</strong>bjective → <strong>R</strong>eflect → <strong>E</strong>valuate. Make it quick, honest, and a little playful.
+                  </p>
+
+                  {/* C — Context */}
+                  <div className="mb-4">
+                    <div className="flex items-center justify-between">
+                      <label className="text-sm font-medium">C — Context</label>
+                      <span className="text-xs text-muted-foreground">What do you want the AI to focus on?</span>
+                    </div>
+                    <textarea
+                      className="w-full mt-2 rounded-md border bg-background p-3 text-sm"
+                      rows={3}
+                      placeholder="E.g. 'Summarize main ethical tradeoffs of this lesson' or 'Give quick practical steps to try out the method'..."
+                      value={coreState.context}
+                      onChange={(e) => updateCore({ context: e.target.value })}
+                    />
+                    <div className="mt-2 flex gap-2">
+                      <Button size="sm" variant="ghost" onClick={() => updateCore({ context: "" })}>Clear</Button>
+                      <div className="text-xs text-muted-foreground ml-auto">
+                        Saved: {coreState.lastSavedAt ? new Date(coreState.lastSavedAt).toLocaleString() : "—"}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* O — Objective */}
+                  <div className="mb-4">
+                    <div className="flex items-center justify-between">
+                      <label className="text-sm font-medium">O — Objective</label>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-muted-foreground">Objective-only facts</span>
+                        <Button size="sm" onClick={runObjective} disabled={isObjectiveLoading}>
+                          {isObjectiveLoading ? "Fetching…" : "Get Objective"}
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="mt-2 rounded-md border bg-muted p-3 text-sm whitespace-pre-wrap">
+                      {coreState.objective ? (
+                        <>
+                          <div className="mb-2 text-xs text-muted-foreground">Objective output (auto-saved)</div>
+                          <div>{coreState.objective}</div>
+                        </>
+                      ) : (
+                        <div className="text-xs text-muted-foreground">No objective output yet. Click "Get Objective" to fetch objective facts based on your context. (API fallback available.)</div>
+                      )}
+                    </div>
+                    {objectiveError && <div className="mt-2 text-xs text-red-500">{objectiveError}</div>}
+                  </div>
+
+                  {/* R — Reflect */}
+                  <div className="mb-4">
+                    <label className="text-sm font-medium">R — Reflect</label>
+                    <textarea
+                      className="w-full mt-2 rounded-md border bg-background p-3 text-sm"
+                      rows={3}
+                      placeholder="What changed in your understanding? What surprised you?"
+                      value={coreState.reflection}
+                      onChange={(e) => updateCore({ reflection: e.target.value })}
+                    />
+                  </div>
+
+                  {/* E — Evaluate */}
+                  <div className="mb-4">
+                    <label className="text-sm font-medium">E — Evaluate</label>
+                    <textarea
+                      className="w-full mt-2 rounded-md border bg-background p-3 text-sm"
+                      rows={3}
+                      placeholder="Is this info useful, accurate, biased? Next steps?"
+                      value={coreState.evaluation}
+                      onChange={(e) => updateCore({ evaluation: e.target.value })}
+                    />
+                  </div>
+
+                  {/* Small playful footer actions */}
+                  <div className="mt-3 flex items-center gap-3">
+                    <Button size="sm" variant="outline" onClick={() => {
+                      // quick copy summary to clipboard
+                      const summary = `CORE — ${project.title} / ${currentLesson.title}\n\nContext:\n${coreState.context}\n\nObjective:\n${coreState.objective}\n\nReflection:\n${coreState.reflection}\n\nEvaluation:\n${coreState.evaluation}`;
+                      navigator.clipboard?.writeText(summary);
+                      // tiny visual feedback — naive alert (prototype)
+                      alert("CORE summary copied to clipboard ✨");
+                    }}>
+                      Copy CORE Summary
+                    </Button>
+
+                    <Button size="sm" variant="ghost" onClick={() => resetCoreForLesson()}>
+                      Reset CORE (this lesson)
+                    </Button>
+
+                    <div className="ml-auto text-xs text-muted-foreground">
+                      Tip: Re-run Objective after editing context to refine outputs.
+                    </div>
+                  </div>
+                </div>
+
                 {/* Lesson Navigation */}
-                <div className="flex items-center justify-between">
+                <div className="mt-6 flex items-center justify-between">
                   <Button 
                     variant="outline" 
                     disabled={activeLesson === 0}
@@ -198,82 +407,6 @@ const ProjectDetail = () => {
                     Next Lesson
                   </Button>
                 </div>
-              </section>
-
-              {/* AI Assistant */}
-              <section className="rounded-xl border border-border bg-card shadow-card overflow-hidden">
-                <div className="flex items-center gap-3 border-b border-border bg-gradient-to-r from-primary/10 to-transparent p-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-                    <Bot className="h-5 w-5 text-primary-foreground" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-foreground">AI Project Assistant</h3>
-                    <p className="text-xs text-muted-foreground">Ask questions, get feedback, explore ideas</p>
-                  </div>
-                  <Sparkles className="ml-auto h-5 w-5 text-primary animate-pulse" />
-                </div>
-
-                {/* Chat Messages */}
-                <div className="h-80 overflow-y-auto p-4 space-y-4">
-                  {aiMessages.map((message, index) => (
-                    <div 
-                      key={index}
-                      className={cn(
-                        "flex gap-3",
-                        message.role === "user" && "flex-row-reverse"
-                      )}
-                    >
-                      <div className={cn(
-                        "flex h-8 w-8 shrink-0 items-center justify-center rounded-full",
-                        message.role === "assistant" ? "bg-primary" : "bg-muted"
-                      )}>
-                        {message.role === "assistant" ? (
-                          <Bot className="h-4 w-4 text-primary-foreground" />
-                        ) : (
-                          <MessageSquare className="h-4 w-4 text-muted-foreground" />
-                        )}
-                      </div>
-                      <div className={cn(
-                        "max-w-[80%] rounded-lg px-4 py-2.5",
-                        message.role === "assistant" 
-                          ? "bg-muted text-foreground" 
-                          : "bg-primary text-primary-foreground"
-                      )}>
-                        <p className="text-sm">{message.content}</p>
-                      </div>
-                    </div>
-                  ))}
-                  {isAiLoading && (
-                    <div className="flex gap-3">
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary">
-                        <Bot className="h-4 w-4 text-primary-foreground" />
-                      </div>
-                      <div className="rounded-lg bg-muted px-4 py-2.5">
-                        <div className="flex gap-1">
-                          <span className="h-2 w-2 rounded-full bg-muted-foreground/50 animate-bounce" style={{ animationDelay: "0ms" }} />
-                          <span className="h-2 w-2 rounded-full bg-muted-foreground/50 animate-bounce" style={{ animationDelay: "150ms" }} />
-                          <span className="h-2 w-2 rounded-full bg-muted-foreground/50 animate-bounce" style={{ animationDelay: "300ms" }} />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Chat Input */}
-                <form onSubmit={handleAiSubmit} className="border-t border-border p-4">
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={aiInput}
-                      onChange={(e) => setAiInput(e.target.value)}
-                      placeholder="Ask about this lesson or project..."
-                      className="flex-1 rounded-lg border border-border bg-background px-4 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                    />
-                    <Button type="submit" disabled={isAiLoading || !aiInput.trim()}>
-                      <Send className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </form>
               </section>
             </div>
 
